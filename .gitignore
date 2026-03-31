@@ -1,0 +1,23 @@
+
+*.log
+*.jou
+*.str
+
+
+.Xil/
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+
+# Simulation artifacts
+*.wdb
+*.wcfg
+
+
+
+
+.DS_Store
+Thumbs.db
