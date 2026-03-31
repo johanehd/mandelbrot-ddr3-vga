@@ -1,0 +1,3 @@
+sim/ddr3_model.sv linguist-vendored
+sim/ddr3_model_parameters.vh linguist-vendored
+sim/wiredly.v linguist-vendored
