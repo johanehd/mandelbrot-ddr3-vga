@@ -95,5 +95,5 @@ set_property IOSTANDARD SSTL135 [get_ports {DDR3_0_cs_n[*]}]
 set_property IOSTANDARD SSTL135 [get_ports {DDR3_0_odt[*]}]
 
 
-set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins mandebrot_vga_top_i/mig_7series_0/u_mandebrot_vga_top_mig_7series_0_0_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT]] -group [get_clocks -of_objects [get_pins mandebrot_vga_top_i/clk_wiz_0/inst/mmcm_adv_inst/CLKOUT0]] -group [get_clocks -of_objects [get_pins mandebrot_vga_top_i/clk_wiz_0/inst/mmcm_adv_inst/CLKOUT1]] -group [get_clocks -of_objects [get_pins mandebrot_vga_top_i/clk_wiz_0/inst/mmcm_adv_inst/CLKOUT2]]
+set_clock_groups -asynchronous -group [get_clocks -of_objects [get_pins mandebrot_vga_top_i/clk_wiz_0/inst/mmcm_adv_inst/CLKOUT2]] -group [get_clocks -of_objects [get_pins mandebrot_vga_top_i/mig_7series_0/u_mandebrot_vga_top_mig_7series_0_0_mig/u_ddr3_infrastructure/gen_mmcm.mmcm_i/CLKFBOUT]]
 
