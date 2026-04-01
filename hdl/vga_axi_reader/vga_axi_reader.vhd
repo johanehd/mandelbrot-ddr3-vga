@@ -48,9 +48,27 @@ architecture Behavioral of vga_axi_reader is
     signal state : state_type := S_IDLE;
 
     constant DDR3_BASE : unsigned(31 downto 0) := x"80010000";
+    function to_gray(b : std_logic_vector) return std_logic_vector is
+        variable g : std_logic_vector(b'range);
+    begin
+        g(b'high) := b(b'high);
+        for i in b'high-1 downto 0 loop
+            g(i) := b(i+1) xor b(i);
+        end loop;
+        return g;
+    end function;
 
+    function from_gray(g : std_logic_vector) return std_logic_vector is
+        variable b : std_logic_vector(g'range);
+    begin
+        b(g'high) := g(g'high);
+        for i in g'high-1 downto 0 loop
+            b(i) := b(i+1) xor g(i);
+        end loop;
+        return b;
+    end function;
     -- synchronize VGA signals from VGA clk domain to system clock 
-    signal vga_y_s0, vga_y_s1           : std_logic_vector(9 downto 0) := (others => '0');
+    signal vga_y_s1           : std_logic_vector(9 downto 0) := (others => '0');
     signal vga_active_s0, vga_active_s1 : std_logic := '0';
     signal ping_pong_s0, ping_pong_s1   : std_logic := '0';
 
@@ -58,13 +76,18 @@ architecture Behavioral of vga_axi_reader is
     signal load_col   : unsigned(9 downto 0) := (others => '0'); -- current column 
     signal last_line  : unsigned(9 downto 0) := (others => '1'); -- last loaded line 
     signal loading    : std_logic := '0';
-
+    
+    signal vga_y_gray    : std_logic_vector(9 downto 0) := (others => '0');
+    signal vga_y_gray_s0 : std_logic_vector(9 downto 0) := (others => '0');
+    signal vga_y_gray_s1 : std_logic_vector(9 downto 0) := (others => '0');
+    
     signal burst_num  : unsigned(2 downto 0) := (others => '0');
     
     -- current line base address 
     signal line_base  : unsigned(31 downto 0) := (others => '0');
 
 begin
+    vga_y_gray <= to_gray(vga_y_i);
     -- unused AXI Write
     m_axi_awaddr  <= (others => '0');
     m_axi_awvalid <= '0';
@@ -82,22 +105,22 @@ begin
     process(clk_i, rst_i)
     begin
         if rst_i = '1' then
-            vga_y_s0      <= (others => '0');
-            vga_y_s1      <= (others => '0');
+            vga_y_gray_s0 <= (others => '0');
+            vga_y_gray_s1 <= (others => '0');
             vga_active_s0 <= '0';
             vga_active_s1 <= '0';
             ping_pong_s0  <= '0';
             ping_pong_s1  <= '0';
         elsif rising_edge(clk_i) then
-            vga_y_s0      <= vga_y_i;
-            vga_y_s1      <= vga_y_s0;
+            vga_y_gray_s0 <= vga_y_gray;
+            vga_y_gray_s1 <= vga_y_gray_s0;
             vga_active_s0 <= vga_active_i;
             vga_active_s1 <= vga_active_s0;
             ping_pong_s0  <= ping_pong_i;
             ping_pong_s1  <= ping_pong_s0;
         end if;
     end process;
-
+    vga_y_s1 <= from_gray(vga_y_gray_s1);
     process(clk_i, rst_i)
         variable next_line   : unsigned(9 downto 0);
         variable pixel_index : unsigned(31 downto 0);
