@@ -7,7 +7,7 @@ entity vga_axi_reader is
         clk_i             : in  std_logic;
         rst_i             : in  std_logic;
         vga_x_i           : in  std_logic_vector(9 downto 0);
-        vga_y_i           : in  std_logic_vector(9 downto 0);
+        vga_y_gray_i      : in  std_logic_vector(9 downto 0);
         vga_active_i      : in  std_logic;
         ping_pong_i       : in  std_logic;
         bram_we_o         : out std_logic;
@@ -48,15 +48,6 @@ architecture Behavioral of vga_axi_reader is
     signal state : state_type := S_IDLE;
 
     constant DDR3_BASE : unsigned(31 downto 0) := x"80010000";
-    function to_gray(b : std_logic_vector) return std_logic_vector is
-        variable g : std_logic_vector(b'range);
-    begin
-        g(b'high) := b(b'high);
-        for i in b'high-1 downto 0 loop
-            g(i) := b(i+1) xor b(i);
-        end loop;
-        return g;
-    end function;
 
     function from_gray(g : std_logic_vector) return std_logic_vector is
         variable b : std_logic_vector(g'range);
@@ -67,6 +58,7 @@ architecture Behavioral of vga_axi_reader is
         end loop;
         return b;
     end function;
+
     -- synchronize VGA signals from VGA clk domain to system clock 
     signal vga_y_s1           : std_logic_vector(9 downto 0) := (others => '0');
     signal vga_active_s0, vga_active_s1 : std_logic := '0';
@@ -77,7 +69,6 @@ architecture Behavioral of vga_axi_reader is
     signal last_line  : unsigned(9 downto 0) := (others => '1'); -- last loaded line 
     signal loading    : std_logic := '0';
     
-    signal vga_y_gray    : std_logic_vector(9 downto 0) := (others => '0');
     signal vga_y_gray_s0 : std_logic_vector(9 downto 0) := (others => '0');
     signal vga_y_gray_s1 : std_logic_vector(9 downto 0) := (others => '0');
     
@@ -87,7 +78,6 @@ architecture Behavioral of vga_axi_reader is
     signal line_base  : unsigned(31 downto 0) := (others => '0');
 
 begin
-    vga_y_gray <= to_gray(vga_y_i);
     -- unused AXI Write
     m_axi_awaddr  <= (others => '0');
     m_axi_awvalid <= '0';
@@ -112,7 +102,7 @@ begin
             ping_pong_s0  <= '0';
             ping_pong_s1  <= '0';
         elsif rising_edge(clk_i) then
-            vga_y_gray_s0 <= vga_y_gray;
+            vga_y_gray_s0 <= vga_y_gray_i;
             vga_y_gray_s1 <= vga_y_gray_s0;
             vga_active_s0 <= vga_active_i;
             vga_active_s1 <= vga_active_s0;

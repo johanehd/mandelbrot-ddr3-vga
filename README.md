@@ -45,7 +45,7 @@ This project implements a **fully hardware Mandelbrot set renderer** on a Digile
 
 The system is organized as a Vivado Block Design connecting custom RTL modules:
 <p align="center">
-  <img src="docs/design_mandelbrot.jpg" alt="Vivado Block Design" width="850"/>
+  <img src="docs/design_mandelbrot.png" alt="Vivado Block Design" width="850"/>
 </p>
 
 ### Data Flow

@@ -50,6 +50,13 @@ ping_pong_reg = 0 : bram_rd_addr = h_cnt + 1          (range 1–640)
 ping_pong_reg = 1 : bram_rd_addr = 640 + h_cnt + 1    (range 641–1280)
 ```
 
+### Gray Encoding for CDC
+
+`v_cnt` is registered in Gray code on every rising edge of `clk_25` and
+exposed as `pixel_y_gray_o`. This ensures that only 1 bit changes per
+line increment, making it safe to cross to the AXI clock domain (83.33 MHz)
+using a standard 2-FF synchronizer inside `vga_axi_reader`.
+
 ### RGB Output
 
 `pixel_data_i` is a 12-bit RGB444 value split as follows:
@@ -69,7 +76,7 @@ All RGB outputs are forced to 0 outside the active zone.
 | `rst` | in | 1 | Asynchronous active-high reset |
 | `pixel_data_i` | in | 12 | RGB444 pixel data from BRAM via palette |
 | `pixel_x_o` | out | 10 | Current pixel x coordinate (0 in blanking) |
-| `pixel_y_o` | out | 10 | Current pixel y coordinate (0 in blanking) |
+| `pixel_y_gray_o` | out | 10 | Current vertical line in Gray code, registered in 25 MHz domain |
 | `zone_on_o` | out | 1 | High when in visible area |
 | `ping_pong_o` | out | 1 | Current ping-pong buffer selector |
 | `bram_rd_addr_o` | out | 11 | BRAM read address (1 cycle ahead) |
@@ -93,6 +100,8 @@ All RGB outputs are forced to 0 outside the active zone.
 - `vga_hs_o` and `vga_vs_o` are combinatorial, no pipeline delay
 - `ping_pong_reg` toggles only during visible lines (v_cnt < 480) to avoid
   spurious toggles during vertical blanking
+- `pixel_y_gray_o` is registered synchronously on `clk_25` to guarantee
+  glitch-free CDC to the 83.33 MHz domain
 
 ## Files
 

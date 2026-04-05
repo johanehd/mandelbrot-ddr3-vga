@@ -58,12 +58,19 @@ synchronizer before use.
 
 ### CDC — Clock Domain Crossing
 
-`vga_y_i`, `vga_active_i` and `ping_pong_i` all originate from the VGA
+`vga_y_gray_i`, `vga_active_i` and `ping_pong_i` all originate from the VGA
 clock domain (25 MHz). They are synchronized to the AXI clock domain
 (83.33 MHz) using a 2-stage flip-flop synchronizer:
 ```
 signal_i → [FF clk_i] → signal_s0 → [FF clk_i] → signal_s1 (safe to use)
 ```
+
+`vga_y_gray_i` carries the vertical line counter encoded in Gray code.
+Gray encoding ensures that only 1 bit changes per increment, making it safe
+to cross the clock domain with a standard 2-FF synchronizer. The Gray value
+is encoded and registered in the 25 MHz domain (inside `vga_controller`)
+before crossing, and decoded back to binary via `from_gray()` after
+synchronization.
 
 ### FSM
 
@@ -101,7 +108,7 @@ DDR3_BASE = 0x80010000
 | `clk_i` | in | 1 | AXI system clock (83.33 MHz) |
 | `rst_i` | in | 1 | Asynchronous active-high reset |
 | `vga_x_i` | in | 10 | Current VGA horizontal pixel (25 MHz domain) |
-| `vga_y_i` | in | 10 | Current VGA vertical line (25 MHz domain) |
+| `vga_y_gray_i` | in | 10 | Current VGA vertical line, Gray encoded, registered in 25 MHz domain |
 | `vga_active_i` | in | 1 | VGA active zone flag (25 MHz domain) |
 | `ping_pong_i` | in | 1 | Current VGA buffer selector (25 MHz domain) |
 | `image_ready_i` | in | 1 | High when DDR3 image is fully written |
@@ -142,9 +149,9 @@ DDR3_BASE = 0x80010000
 ## Implementation Notes
 
 - `vga_x_i` is present in the port list but not used internally, line
-  loading is triggered by `vga_y_i` only
+  loading is triggered by `vga_y_gray_i` only
 - The ping-pong value is sampled from `ping_pong_s1` at each beat during
-
+  the burst
 
 ## Files
 

@@ -1,13 +1,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
 entity vga_axi_reader_wrapper is
     port (
         clk               : in  std_logic;
         rst               : in  std_logic;
         vga_x_i           : in  std_logic_vector(9 downto 0);
-        vga_y_i           : in  std_logic_vector(9 downto 0);
+        vga_y_gray_i      : in  std_logic_vector(9 downto 0);
         vga_active_i      : in  std_logic;
         image_ready_i     : in  std_logic;
         ping_pong_i       : in  std_logic;
@@ -42,7 +41,6 @@ entity vga_axi_reader_wrapper is
         m_axi_rready      : out std_logic
     );
 end entity;
-
 architecture wrapper of vga_axi_reader_wrapper is
 begin
     i_core : entity work.vga_axi_reader
@@ -51,7 +49,7 @@ begin
             rst_i            => rst,
             
             vga_x_i          => vga_x_i,
-            vga_y_i          => vga_y_i,
+            vga_y_gray_i     => vga_y_gray_i,
             vga_active_i     => vga_active_i,
             image_ready_i    => image_ready_i,
             ping_pong_i      => ping_pong_i,

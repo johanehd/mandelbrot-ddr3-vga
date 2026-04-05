@@ -578,7 +578,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net vga_controller_0_bram_rd_addr [get_bd_pins vga_controller_0/bram_rd_addr_o] [get_bd_pins line_buffer_bram_0/addr_b_i]
   connect_bd_net -net vga_controller_0_ping_pong [get_bd_pins vga_controller_0/ping_pong_o] [get_bd_pins vga_axi_reader_wrapp_0/ping_pong_i]
   connect_bd_net -net vga_controller_0_pixel_x [get_bd_pins vga_controller_0/pixel_x_o] [get_bd_pins vga_axi_reader_wrapp_0/vga_x_i]
-  connect_bd_net -net vga_controller_0_pixel_y [get_bd_pins vga_controller_0/pixel_y_o] [get_bd_pins vga_axi_reader_wrapp_0/vga_y_i]
+  connect_bd_net -net vga_controller_0_pixel_y_gray [get_bd_pins vga_controller_0/pixel_y_gray_o] [get_bd_pins vga_axi_reader_wrapp_0/vga_y_gray_i]
   connect_bd_net -net vga_controller_0_vga_b_o [get_bd_pins vga_controller_0/vga_b_o] [get_bd_ports vga_b_o_0]
   connect_bd_net -net vga_controller_0_vga_g_o [get_bd_pins vga_controller_0/vga_g_o] [get_bd_ports vga_g_o_0]
   connect_bd_net -net vga_controller_0_vga_hs_o [get_bd_pins vga_controller_0/vga_hs_o] [get_bd_ports vga_hs_o_0]
