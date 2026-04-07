@@ -12,7 +12,7 @@ architecture sim of tb_vga_axi_reader is
     signal clk_i          : std_logic := '0';
     signal rst_i          : std_logic := '1';
     signal vga_x_i        : std_logic_vector(9 downto 0)  := (others => '0');
-    signal vga_y_i        : std_logic_vector(9 downto 0)  := (others => '0');
+    signal vga_y_gray_i        : std_logic_vector(9 downto 0)  := (others => '0');
     signal vga_active_i   : std_logic := '0';
     signal ping_pong_i    : std_logic := '0';
     signal image_ready_i  : std_logic := '0';
@@ -50,7 +50,7 @@ begin
             clk_i         => clk_i,
             rst_i         => rst_i,
             vga_x_i       => vga_x_i,
-            vga_y_i       => vga_y_i,
+            vga_y_gray_i       => vga_y_gray_i,
             vga_active_i  => vga_active_i,
             ping_pong_i   => ping_pong_i,
             image_ready_i => image_ready_i,
@@ -93,7 +93,7 @@ begin
         report "TC01: load line 1, ping_pong=0";
         image_ready_i <= '1';
         vga_active_i  <= '1';
-        vga_y_i       <= std_logic_vector(to_unsigned(0, 10));
+        vga_y_gray_i       <= std_logic_vector(to_unsigned(0, 10));
         ping_pong_i   <= '0';
 
         for b in 0 to 4 loop
@@ -121,7 +121,7 @@ begin
         report "TC02: image_ready=0, no burst expected";
         image_ready_i <= '0';
         vga_active_i  <= '1';
-        vga_y_i       <= std_logic_vector(to_unsigned(10, 10));
+        vga_y_gray_i       <= std_logic_vector(to_unsigned(10, 10));
         wait for 100 * CLK_PERIOD;
         assert m_axi_arvalid = '0'
             report "TC02 FAIL: burst launched while image_ready=0" severity error;
